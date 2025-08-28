@@ -1,0 +1,165 @@
+{
+  "name": "NASA Solar Flare Alert Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        48,
+        0
+      ],
+      "id": "6dd0c803-cef5-407e-b88c-17d46d1e08b1",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "resource": "donkiSolarFlare",
+        "additionalFields": {
+          "startDate": "={{ $today.minus(15,\"days\") }}"
+        }
+      },
+      "type": "n8n-nodes-base.nasa",
+      "typeVersion": 1,
+      "position": [
+        256,
+        0
+      ],
+      "id": "4322b3e7-23bf-4a32-a348-3c9541d71a6a",
+      "name": "Get a DONKI solar flare",
+      "credentials": {
+        "nasaApi": {
+          "id": "38sen04BCB8kakS6",
+          "name": "NASA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d0bda381-97f8-4b12-88d7-23321bb4821a",
+              "leftValue": "={{ $json.classType }}",
+              "rightValue": "C",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        464,
+        0
+      ],
+      "id": "d8c7ccfd-08d6-4584-8da3-a9453fc72794",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "request",
+        "operation": "send",
+        "binId": "1756407740160-0037988866679",
+        "binContent": "=There was a solar flare of class\n{{ $json.classType }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.postBin",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -96
+      ],
+      "id": "c9ada282-c34e-4acd-945c-8e0886ad9179",
+      "name": "Send a request"
+    },
+    {
+      "parameters": {
+        "resource": "request",
+        "operation": "send",
+        "binId": "1756407740160-0037988866679",
+        "binContent": "=There was a solar flare of class\n{{ $json.classType }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.postBin",
+      "typeVersion": 1,
+      "position": [
+        672,
+        64
+      ],
+      "id": "9a1f3db8-6e77-45b9-a2e4-16dcb7a22494",
+      "name": "Send a request1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get a DONKI solar flare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a DONKI solar flare": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7b4a8230-8d4f-4ded-9e7e-9786a6cd74fb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c7598f4cbdfab0d968cf5edb94dba2ee4ea50b3d6b103a9761c5cda2b1824fe0"
+  },
+  "id": "PMrkishP1AnmXt3z",
+  "tags": []
+}
